@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Local runtime/debug artifacts
+dash_out*.txt
+dash_err*.txt
+
+# Keep source data private when publishing static site
+Data/
+
+# Python app source is optional for static Pages publish
+# test.py
+# generate_static_dashboard.py

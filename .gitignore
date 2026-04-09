@@ -12,3 +12,10 @@ Data/
 # Python app source is optional for static Pages publish
 # test.py
 # generate_static_dashboard.py
+
+# Local development files not published to Pages
+.vscode/
+generate_static_dashboard.py
+test.py
+static_dashboard.html
+plotly-cloud.toml

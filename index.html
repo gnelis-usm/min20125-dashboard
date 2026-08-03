@@ -477,14 +477,16 @@ function renderComparisonControls() {
   });
 
   const unionEvals = getComparisonUnionEvals(state.compSemesters);
+  const finalCol = DATA.meta.finalGradeCol;
+  const avgOptions = unionEvals.includes(finalCol) ? unionEvals.slice() : unionEvals.concat([finalCol]);
 
-  state.compSelectedEvals = state.compSelectedEvals.filter(e => unionEvals.includes(e));
-  if (!state.compSelectedEvals.length) state.compSelectedEvals = unionEvals.slice();
+  state.compSelectedEvals = state.compSelectedEvals.filter(e => avgOptions.includes(e));
+  if (!state.compSelectedEvals.length) state.compSelectedEvals = avgOptions.slice();
 
   if (!unionEvals.includes(state.compEval)) state.compEval = unionEvals.length ? unionEvals[0] : null;
 
   fillSelect(document.getElementById('comp-eval'), unionEvals, state.compEval, false);
-  renderChecklist(document.getElementById('comp-avg-toggle'), unionEvals, state.compSelectedEvals, () => {
+  renderChecklist(document.getElementById('comp-avg-toggle'), avgOptions, state.compSelectedEvals, () => {
     state.compSelectedEvals = Array.from(document.querySelectorAll('#comp-avg-toggle input:checked')).map(x => x.value);
     renderComparisonAvg();
   });
@@ -537,6 +539,7 @@ function renderComparisonApproval() {
 function renderComparisonAvg() {
   const traces = [];
   const evals = state.compSelectedEvals;
+  const includeFinal = evals.includes(DATA.meta.finalGradeCol);
   if (!evals.length) {
     Plotly.newPlot('comp-avg-chart', [], clone(LAYOUT_BASE));
     return;
@@ -554,7 +557,7 @@ function renderComparisonAvg() {
         y.push(s.avgByEval[ev]);
       }
     });
-    if (s.finalAvg !== null && s.finalAvg !== undefined) {
+    if (includeFinal && s.finalAvg !== null && s.finalAvg !== undefined) {
       x.push(DATA.meta.finalGradeCol);
       y.push(s.finalAvg);
     }

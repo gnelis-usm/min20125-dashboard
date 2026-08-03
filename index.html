@@ -575,7 +575,13 @@ function renderComparisonAvg() {
   const layout = clone(LAYOUT_BASE);
   layout.title = {text: 'Comparacion de Nota Promedio por Evaluacion', font: LAYOUT_BASE.title.font};
   layout.barmode = 'group';
-  layout.xaxis = {...layout.xaxis, title: ''};
+  layout.xaxis = {
+    ...layout.xaxis,
+    title: '',
+    type: 'category',
+    categoryorder: 'array',
+    categoryarray: evals,
+  };
   layout.yaxis = {...layout.yaxis, title: 'Nota Promedio', range: [0, 100]};
   Plotly.newPlot('comp-avg-chart', traces, layout, {displayModeBar: false, responsive: true});
 }

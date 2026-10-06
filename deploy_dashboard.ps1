@@ -31,7 +31,25 @@ if (-not (Test-Path $pythonExe)) {
 }
 
 Write-Step 'Regenerating static dashboard from Data workbook'
-& $pythonExe generate_static_dashboard.py
+$dataFile = Join-Path 'Data' 'Database v2026.01.xlsx'
+if (-not (Test-Path $dataFile)) {
+    throw "Expected source workbook was not found: $dataFile"
+}
+
+$temporaryDataFile = Join-Path $env:TEMP ("dashboard-data-{0}-{1}.xlsx" -f $PID, [guid]::NewGuid())
+$previousDataFile = $env:DASHBOARD_DATA_FILE
+try {
+    Copy-Item -LiteralPath $dataFile -Destination $temporaryDataFile -Force
+    $env:DASHBOARD_DATA_FILE = $temporaryDataFile
+    & $pythonExe generate_static_dashboard.py
+    if ($LASTEXITCODE -ne 0) {
+        throw "Dashboard generation failed with exit code $LASTEXITCODE. Nothing was published."
+    }
+}
+finally {
+    $env:DASHBOARD_DATA_FILE = $previousDataFile
+    Remove-Item -LiteralPath $temporaryDataFile -Force -ErrorAction SilentlyContinue
+}
 
 if (-not (Test-Path 'static_dashboard.html')) {
     throw 'Expected static_dashboard.html was not generated.'
